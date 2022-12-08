@@ -1,7 +1,8 @@
 import numpy as np
 
 
-def find_stress_column_buckling():
+def find_stress_column_buckling(a=2, b):
+
     pass
 
 def find_stress_shell_buckling(p, E, R, t_1, labda, v, L):
