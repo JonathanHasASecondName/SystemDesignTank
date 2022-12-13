@@ -13,6 +13,7 @@ def stress_shear_force_curtain(mass_tank,thickness_curtain,radius_curtain):
 def stress_shear_force_curtain():
     return
 
-def bending_stress_bottom_curtain():
+def bending_stress_bottom_curtain(diameter, thickness, lateral_load, height):
+    I_xx = (pi * thickness * diameter ** 3)/8
 
-    return
+    return (lateral_load * height * diameter)/(2 * I_xx)
