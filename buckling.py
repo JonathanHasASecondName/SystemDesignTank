@@ -10,6 +10,9 @@ def find_stress_column_buckling(A,L,I,E):
     column_buckling_critical_stress= np.pi**2*E*I/(A*L**2)
     return column_buckling_critical_stress
 
+def find_axial_stress(F_axial,A)
+    axial_stress=F_axial/A
+    return axial_stress
 def find_stress_shell_buckling(p, E, R, t_1, labda, v, L):
     Q = p/E * (R/t_1)**2
     k = labda + (12/np.pi**4) * (L**4/(R**2*t_1**2)) * ((1-v**2)/labda)
