@@ -1,5 +1,11 @@
 import numpy as np
 
+def find_moment_inertia_cylindrical_shell(r,t):
+    return (1/4)*np.pi*(r**4) - (1/4)*np.pi*((r-t)**4)
+
+def find_sectional_area_cylindrical_shell(r,t):
+    return np.pi*(r**2) - np.pi*((r-t)**2)
+
 def find_cylinder_cross_section_area(r,t_1): #VALIDATED
     A=np.pi*r**2-np.pi*(r-t_1)**2
     return A
@@ -21,13 +27,19 @@ def find_axial_stress(F_axial,A): #VALIDATED
     return axial_stress
 def find_stress_shell_buckling(p, E, r, t_1, v, L): #VALIDATED
     k_values = []
-    for lambda_ in range(1,100):
+    for lambda_ in range(1,50000):
         Q = p/E * (r/t_1)**2
         k_values.append(lambda_ + (12/np.pi**4) * (L**4/(r**2*t_1**2)) * ((1-v**2)/lambda_))
     k = min(k_values)
+    print(k)
     part_a = 1.983 - 0.983*np.exp(-23.14*Q)
     part_b = (k*np.pi**2 * E)/(12*(1-v**2))
     part_c = t_1**2/(L**2)
     return part_a * part_b * part_c
 
-#print(find_stress_shell_buckling(1.6E6,200E9,0.56,0.001,0.28,0.04))
+if __name__ in '__main__':
+    t = 0.001
+    A = find_sectional_area_cylindrical_shell(0.56,t)
+    B = find_stress_shell_buckling(0,200E9,0.56,t,0.3,0.66)
+    print(A,B)
+    print(A*B)
