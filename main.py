@@ -22,9 +22,10 @@ sigma_y = 350E6
 rho = 7750
 
 def evaluate_mass(r,t,l,rho):
-    return mass_calculation.semi_spherical_shell(r,t,rho) + mass_calculation.cylindrical_shell(r,t,l,rho)
-def evaluate_bulkhead():
-    t_min_bulkhead = pressure.find_min_thickness_hoop_stress(p=p,r=r_cyl,sigma_y=sigma_y)
+    return 2*mass_calculation.semi_spherical_shell(r,t,rho) + mass_calculation.cylindrical_shell(r,t,l,rho)
+def evaluate_tank_thickness(p,r,sigma_y):
+    return (pressure.find_min_thickness_cylinder(p,r,sigma_y), pressure.find_min_thickness_sphere(p,r,sigma_y))
+
 
 
 if __name__ in '__main__':
@@ -40,4 +41,8 @@ if __name__ in '__main__':
     V_req = {V_req}
     -----------------------''')
 
+    t = evaluate_tank_thickness(p=p, r=r_cyl, sigma_y=sigma_y)
+    m = evaluate_mass(r=r_cyl,t=t[0],l=l_cyl,rho=rho)
+
+    print(t,m)
 
