@@ -1,4 +1,3 @@
-import numpy as np
 import math
 from buckling import *
 
@@ -9,10 +8,11 @@ height_upper_curtain = 0.34
 radius_curtain = 0.56
 materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Al 2024', 2780, 324000000, 283000000, 0.33, 73100000000],
-             ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000]]
+             ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
+             ['Carbon Fibre', 1600, 600000000,  , 70000000000]]
 
 
-# [material_name,material_density,material_poisson_ratio,material_axial_stress,material_shear_stress,young_modulus]
+# [material_name,material_density,material_axial_stress,material_shear_stress,material_poisson_ratio,young_modulus]
 
 def stress_shear_crosssection(thickness_curtain, radius_curtain):
     V = (1.5 * 9.81 * mass_tank) / 2
@@ -48,22 +48,27 @@ def axial_stresses(thickness_curtain, radius_curtain):
 def shell_buckling(thickness_curtain, radius_curtain, height_curtain, material):
     Buckles = False
     buckling_stress = find_stress_shell_buckling(0, material[5], radius_curtain, thickness_curtain, material[4], height_curtain)
-    if buckling_stress > axial_stresses(thickness_curtain, radius_curtain):
+    if buckling_stress < axial_stresses(thickness_curtain, radius_curtain):
         Buckles = True
     return Buckles
 
 
 def configuration_loop(height_curtain):
-    for thickness_curtain in np.arange(0.001, 0.1, 0.001):
-        for material in materials:
-            if (shell_buckling(thickness_curtain, radius_curtain, height_curtain, material) == False) and (
-                    axial_stresses(thickness_curtain, radius_curtain) <= material[3]) and (
-                    bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain) <= material[3]) and (
-                    shear_stress_connection(radius_curtain) <= material[4]) and (
-                    stress_shear_crosssection(thickness_curtain, radius_curtain) <= material[4]):
-                print(
-                    f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)}")
-                break
+    Running=True
+    for thickness_curtain in np.arange(0.0001, 0.001, 0.0001):
+        if Running:
+            for material in materials:
+                if (shell_buckling(thickness_curtain, radius_curtain, height_curtain, material) == False) and (
+                        axial_stresses(thickness_curtain, radius_curtain) <= material[2]) and (
+                        bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain) <= material[2]) and (
+                        shear_stress_connection(radius_curtain) <= material[3]) and (
+                        stress_shear_crosssection(thickness_curtain, radius_curtain) <= material[3]):
+                    print(
+                        f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)}")
+                    Running = False
+
+
+
 
 
 print(' -- Lower curtain configuration --')
