@@ -28,7 +28,7 @@ def find_penetration_depth_2layer(mass_p,
                                   spacing,
                                   yield_stress):
     # FROM SI UNITS TO FUNKY FORMULA UNITS (SEE SOURCE)
-    mass_p=mass_p*0.001
+    mass_p=mass_p*1000
     velocity_p = velocity_p*0.001
     density_micrometeoroid=density_micrometeoroid*0.001
     bumper_density=bumper_density*0.001
@@ -39,9 +39,12 @@ def find_penetration_depth_2layer(mass_p,
     t_rear_wall=0.055*(density_micrometeoroid*bumper_density)**(1/6)*mass_p**(1/3)*velocity_p/np.sqrt(spacing)*np.sqrt(70/yield_stress)
     return t_rear_wall
 
-#print(find_penetration_depth_2layer(mass_p=1,
-#                                 velocity_p=1,
-#                                 density_micrometeoroid=1,
-#                                 bumper_density=1,
-#                                 spacing=1,
-#                                 yield_stress=1))
+print(find_penetration_depth_2layer(mass_p=0.001,
+                                 velocity_p=17000,
+                                 density_micrometeoroid=1600,
+                                 bumper_density=2700,
+                                 spacing=0.05,
+                                 yield_stress=276e6))
+print(find_penetration_depth_1layer(
+    mass_p=0.001,velocity_p=17000,density_micrometeoroid=1600
+))
