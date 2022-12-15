@@ -31,7 +31,6 @@ def find_stress_shell_buckling(p, E, r, t_1, v, L): #VALIDATED
         Q = p/E * (r/t_1)**2
         k_values.append(lambda_ + (12/np.pi**4) * (L**4/(r**2*t_1**2)) * ((1-v**2)/lambda_))
     k = min(k_values)
-    print(k)
     part_a = 1.983 - 0.983*np.exp(-23.14*Q)
     part_b = (k*np.pi**2 * E)/(12*(1-v**2))
     part_c = t_1**2/(L**2)
