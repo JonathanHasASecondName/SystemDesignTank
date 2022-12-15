@@ -21,7 +21,7 @@ def find_axial_stress(F_axial,A): #VALIDATED
     return axial_stress
 def find_stress_shell_buckling(p, E, r, t_1, v, L): #VALIDATED
     k_values = []
-    for lambda_ in range(1,10):
+    for lambda_ in range(1,100):
         Q = p/E * (r/t_1)**2
         k_values.append(lambda_ + (12/np.pi**4) * (L**4/(r**2*t_1**2)) * ((1-v**2)/lambda_))
     k = min(k_values)
