@@ -16,6 +16,11 @@ V_cap = (1/6)*np.pi*h_cap*(3*r_cyl**2 + h_cap**2)
 V_tot = V_cyl + 2*V_cap
 V_req = 0.747
 
+materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
+             ['Al 2024', 2780, 324000000, 283000000, 0.33, 73100000000],
+             ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
+             ['Carbon Fibre', 1600, 600000000,  ,70000000000]]
+
 # TODO: state assumption that thickness is neglected when considering height constraint of tank
 # TODO: state assumption that radius is same for spherical and cyl section
 

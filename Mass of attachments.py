@@ -1,20 +1,18 @@
 import math
 from buckling import *
 
-mass_tank = 888.4
 flat_distance = 0.04
 height_lower_curtain = 0.66
 height_upper_curtain = 0.34
-radius_curtain = 0.56
+
 materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Al 2024', 2780, 324000000, 283000000, 0.33, 73100000000],
              ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
-             ['Carbon Fibre', 1600, 600000000,  , 70000000000]]
-
+             ['Carbon Fibre', 1600, 600000000,  ,70000000000]]
 
 # [material_name,material_density,material_axial_stress,material_shear_stress,material_poisson_ratio,young_modulus]
 
-def stress_shear_crosssection(thickness_curtain, radius_curtain):
+def stress_shear_crosssection(thickness_curtain, radius_curtain, mass_tank):
     V = (1.5 * 9.81 * mass_tank) / 2
     I = (math.pi * thickness_curtain * (radius_curtain / 2) ** 3) / 8
     Q = 2 * radius_curtain ** 2 * thickness_curtain
@@ -22,14 +20,14 @@ def stress_shear_crosssection(thickness_curtain, radius_curtain):
     return shear_stress
 
 
-def bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain):
+def bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain, mass_tank):
     lateral_load = 1.5 * 9.81 * mass_tank
     I = math.pi * thickness_curtain * (radius_curtain) ** 3
     bending_stress = (lateral_load * height_curtain * radius_curtain) / (2 * I)
     return bending_stress
 
 
-def shear_stress_connection(radius_curtain):
+def shear_stress_connection(radius_curtain, mass_tank):
     V = 4 * 9.81 * mass_tank
     I = 2 * math.pi * radius_curtain * (flat_distance ** 2)
     Q = ((flat_distance ** 2) * radius_curtain * math.pi) / 2
@@ -38,7 +36,7 @@ def shear_stress_connection(radius_curtain):
     return shear_stress
 
 
-def axial_stresses(thickness_curtain, radius_curtain):
+def axial_stresses(thickness_curtain, radius_curtain, mass_tank):
     F = 4 * 9.81 * mass_tank
     A = thickness_curtain * 2 * math.pi * radius_curtain
     axial_stress = F / A
@@ -52,26 +50,23 @@ def shell_buckling(thickness_curtain, radius_curtain, height_curtain, material):
         Buckles = True
     return Buckles
 
-
-def configuration_loop(height_curtain):
+def configuration_loop(height_curtain, mass_tank, radius_curtain=0.56):
     Running=True
     for thickness_curtain in np.arange(0.0001, 0.001, 0.0001):
         if Running:
             for material in materials:
                 if (shell_buckling(thickness_curtain, radius_curtain, height_curtain, material) == False) and (
-                        axial_stresses(thickness_curtain, radius_curtain) <= material[2]) and (
-                        bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain) <= material[2]) and (
-                        shear_stress_connection(radius_curtain) <= material[3]) and (
-                        stress_shear_crosssection(thickness_curtain, radius_curtain) <= material[3]):
-                    print(
-                        f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)}")
+                        axial_stresses(thickness_curtain, radius_curtain, mass_tank) <= material[2]) and (
+                        bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain, mass_tank) <= material[2]) and (
+                        shear_stress_connection(radius_curtain, mass_tank) <= material[3]) and (
+                        stress_shear_crosssection(thickness_curtain, radius_curtain, mass_tank) <= material[3]):
+                    #print(f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)}")
+                    return (material[0], thickness_curtain, height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)
                     Running = False
 
 
 
-
-
-print(' -- Lower curtain configuration --')
-configuration_loop(height_lower_curtain)
-print(' -- Upper curtain configuration --')
-configuration_loop(height_upper_curtain)
+# print(' -- Lower curtain configuration --')
+# configuration_loop(height_lower_curtain)
+# print(' -- Upper curtain configuration --')
+# configuration_loop(height_upper_curtain)
