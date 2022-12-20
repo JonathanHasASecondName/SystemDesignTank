@@ -2,7 +2,8 @@ import numpy as np
 import buckling
 import mass_calculation
 import pressure
-import materials_list
+
+import Mass_of_attachments
 
 # Tank parameters
 p = 1620000
@@ -75,43 +76,53 @@ if __name__ in '__main__':
     # OUT -> loads
 
     #CODE FOR STEP 2
+    for count in range(0,100):
 
-    load_axial = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_axial
-    load_lateral = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_lateral
+       load_axial = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_axial
+       load_lateral = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_lateral
 
-    # IN -> loads + geometry
-    # 3. Evaluate failure stress, and check if failure occurs. Update t_cyl until no failure.
-    # (With a final t_cyl, check if t_sphere < t_cyl. If so, t_sphere = t_cyl)
-    # OUT -> t_sphere and t_cyl
+       # IN -> loads + geometry
+       # 3. Evaluate failure stress, and check if failure occurs. Update t_cyl until no failure.
+       # (With a final t_cyl, check if t_sphere < t_cyl. If so, t_sphere = t_cyl)
+       # OUT -> t_sphere and t_cyl
 
-    #CODE FOR STEP 3
-
-
-    A=buckling.find_sectional_area_cylindrical_shell(r=r_cyl,t=t_cyl)
-    I=buckling.find_cylinder_moment_of_inertia(r=r_cyl,t=t_cyl)
-    axial_stress = buckling.find_axial_stress(F_axial=load_axial,A=A)
-
-    column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A,L=l_cyl,I=I,E=E)
-    shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p,E=E,r=r_cyl,t_1=t_cyl,v=v,L=l_cyl)
-
-    while axial_stress>column_buckling_critical_stress or axial_stress>shell_buckling_critical_stress:
-        t_cyl=t_cyl*1.01
-
-        A = buckling.find_sectional_area_cylindrical_shell(r=r_cyl, t=t_cyl)
-        I = buckling.find_cylinder_moment_of_inertia(r=r_cyl, t=t_cyl)
-        axial_stress = buckling.find_axial_stress(F_axial=load_axial, A=A)
-
-        column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A, L=l_cyl, I=I,
-                                                                                     E=)  # TODO Fill in E
-        shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p, E=, r=r_cyl, t_1=t_cyl, v=,
-                                                                             L=l_cyl)  # TODO Fill in E and v
-
-    if t_cyl>t_sphere:
-        t_sphere=t_cyl
+       #CODE FOR STEP 3
 
 
-    # 4. Calculate mass of attachments, calculate mass of fuel tank, calculate total mass
-    # OUT -> m_attach, m_tank, m_tot
+       A=buckling.find_sectional_area_cylindrical_shell(r=r_cyl,t=t_cyl)
+       I=buckling.find_cylinder_moment_of_inertia(r=r_cyl,t_1=t_cyl)
+       axial_stress = buckling.find_axial_stress(F_axial=load_axial,A=A)
+
+       column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A,L=l_cyl,I=I,E=E)
+       shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p,E=E,r=r_cyl,t_1=t_cyl,v=v,L=l_cyl)
+
+       while axial_stress>column_buckling_critical_stress or axial_stress>shell_buckling_critical_stress:
+           t_cyl=t_cyl*1.01
+
+           A = buckling.find_sectional_area_cylindrical_shell(r=r_cyl, t=t_cyl)
+           I = buckling.find_cylinder_moment_of_inertia(r=r_cyl, t=t_cyl)
+           axial_stress = buckling.find_axial_stress(F_axial=load_axial, A=A)
+
+           column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A, L=l_cyl, I=I,
+                                                                                        E=E)  # TODO Fill in E
+           shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p, E=E, r=r_cyl, t_1=t_cyl, v=v,
+                                                                                L=l_cyl)  # TODO Fill in E and v
+
+       if t_cyl>t_sphere:
+           t_sphere=t_cyl
+
+       m_tank = mass_calculation.cylindrical_shell(r=r_cyl, t=t_cyl, l=l_cyl, rho=rho) \
+                + 2 * mass_calculation.semi_spherical_shell(r=r_cyl, t=t_sphere, rho=rho)
+       # IN m_tank, m_tot
+       # 4. Calculate mass of attachments, calculate mass of fuel tank, calculate total mass
+       # OUT -> m_attach, m_tot
+
+       m_attach = Mass_of_attachments.configuration_loop(height_curtain=1,mass_tank_structure=m_tank,mass_fuel=m_fuel,radius_curtain=0.56)[2]
+
+       m_tot=m_attach+m_tank+m_fuel+m_sc
+       print(t_cyl,m_tot)
+
+    
 
     # 5. Repeat 2. - 4. with new m_attach, m_tank, m_tot
 
