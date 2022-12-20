@@ -25,9 +25,10 @@ sigma_y = 350E6
 rho = 7750
 
 def evaluate_mass(r,t,l,rho):
-    # TODO: Evaluate each section separately (different thicknesses)
-    return 2*mass_calculation.semi_spherical_shell(r,t,rho) + mass_calculation.cylindrical_shell(r,t,l,rho)
+    # Returns (mass cylindrical shell, mass spherical endcaps x2)
+    return (mass_calculation.cylindrical_shell(r,t,l,rho), 2*mass_calculation.semi_spherical_shell(r,t,rho))
 def evaluate_tank_thickness(p,r,sigma_y):
+    # Returns (thickness cylindrical shell, thickness spherical endcaps x2)
     return (pressure.find_min_thickness_cylinder(p,r,sigma_y), pressure.find_min_thickness_sphere(p,r,sigma_y))
 
 
@@ -47,7 +48,6 @@ if __name__ in '__main__':
 
     t = evaluate_tank_thickness(p=p, r=r_cyl, sigma_y=sigma_y)
     m = evaluate_mass(r=r_cyl,t=t[0],l=l_cyl,rho=rho)
-
     # IN -> p, r_cyl,
     # 1. Evaluate tank thickness for internal pressure and evaluate mass
     # OUT -> t_sphere, t_cyl, m_tank

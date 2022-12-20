@@ -10,5 +10,5 @@ def find_min_thickness_cylinder(p,r,sigma_y):
     return (p*r)/sigma_y
 
 def find_min_thickness_sphere(p,r,sigma_y):
-    return (p*r)/(2*sigma_y) # reference paper on launcher sizing DARE
+    return (p*r)/(2*sigma_y)
 
