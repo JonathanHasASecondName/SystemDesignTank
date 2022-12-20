@@ -16,12 +16,16 @@ V_cap = (1/6)*np.pi*h_cap*(3*r_cyl**2 + h_cap**2)
 V_tot = V_cyl + 2*V_cap
 V_req = 0.747
 
+# TODO: state assumption that thickness is neglected when considering height constraint of tank
+# TODO: state assumption that radius is same for spherical and cyl section
+
 #TODO: take material parameters from materials_list.py
 E = 200E9
 sigma_y = 350E6
 rho = 7750
 
 def evaluate_mass(r,t,l,rho):
+    # TODO: Evaluate each section separately (different thicknesses)
     return 2*mass_calculation.semi_spherical_shell(r,t,rho) + mass_calculation.cylindrical_shell(r,t,l,rho)
 def evaluate_tank_thickness(p,r,sigma_y):
     return (pressure.find_min_thickness_cylinder(p,r,sigma_y), pressure.find_min_thickness_sphere(p,r,sigma_y))
@@ -44,5 +48,21 @@ if __name__ in '__main__':
     t = evaluate_tank_thickness(p=p, r=r_cyl, sigma_y=sigma_y)
     m = evaluate_mass(r=r_cyl,t=t[0],l=l_cyl,rho=rho)
 
-    print(t,m)
+    # IN -> p, r_cyl,
+    # 1. Evaluate tank thickness for internal pressure and evaluate mass
+    # OUT -> t_sphere, t_cyl, m_tank
+
+    # IN -> m_attach, m_sc, m_tank, m_fuel
+    # 2. Use masses to find loads.
+    # OUT -> loads
+
+    # IN -> loads + geometry
+    # 3. Evaluate failure stress, and check if failure occurs. Update t_cyl until no failure.
+    # (With a final t_cyl, check if t_sphere < t_cyl. If so, t_sphere = t_cyl)
+    # OUT -> t_sphere and t_cyl
+
+    # 4. Calculate mass of attachments, calculate mass of fuel tank, calculate total mass
+    # OUT -> m_attach, m_tank, m_tot
+
+    # 5. Repeat 2. - 4. with new m_attach, m_tank, m_tot
 
