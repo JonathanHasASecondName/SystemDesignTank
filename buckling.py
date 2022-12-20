@@ -12,7 +12,7 @@ def find_cylinder_cross_section_area(r,t_1): #VALIDATED
 def find_cylinder_moment_of_inertia(r,t_1): #VALIDATED
     I=0.25*np.pi*(r**4-(r-t_1)**4)
     return I
-def find_stress_euler_column_buckling(A,L,I,E):
+def find_stress_euler_column_buckling(A,L,I,E): #___________>
     # This is for Euler column buckling - not applicable to our tanks.
     column_buckling_critical_stress= np.pi**2*E*I/(A*L**2)
     return column_buckling_critical_stress
@@ -25,7 +25,7 @@ def find_stress_short_column_buckling(K,L,r,sigma_y,E): #VALIDATED
 def find_axial_stress(F_axial,A): #VALIDATED
     axial_stress=F_axial/A
     return axial_stress
-def find_stress_shell_buckling(p, E, r, t_1, v, L): #VALIDATED
+def find_stress_shell_buckling(p, E, r, t_1, v, L): #VALIDATED ________>
     k_values = []
     for lambda_ in range(1,50000):
         Q = p/E * (r/t_1)**2

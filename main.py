@@ -28,8 +28,8 @@ m_sc = 425.1-31.7 #VALUES FROM WP2 NOT INCLUDING ORIGINAL PREDICTED MASS OF FUEL
 
 
 # Launch G-Forces MUST CHANGE IF SPACECRAFT IS HEAVIER THAN 1814 kg
-g_axial = 8.5
-g_lateral = 3
+g_axial = 4
+g_lateral = 1.5
 
 #DEFAULT M_ATTACH FOR FIRST ITERATION
 m_attach=0
@@ -93,6 +93,27 @@ if __name__ in '__main__':
     #CODE FOR STEP 3
 
 
+    A=buckling.find_sectional_area_cylindrical_shell(r=r_cyl,t=t_cyl)
+    I=buckling.find_cylinder_moment_of_inertia(r=r_cyl,t=t_cyl)
+    axial_stress = buckling.find_axial_stress(F_axial=load_axial,A=A)
+
+    column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A,L=l_cyl,I=I,E=)#TODO Fill in E
+    shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p,E=,r=r_cyl,t_1=t_cyl,v=,L=l_cyl)#TODO Fill in E and v
+
+    while axial_stress>column_buckling_critical_stress or axial_stress>shell_buckling_critical_stress:
+        t_cyl=t_cyl*1.01
+
+        A = buckling.find_sectional_area_cylindrical_shell(r=r_cyl, t=t_cyl)
+        I = buckling.find_cylinder_moment_of_inertia(r=r_cyl, t=t_cyl)
+        axial_stress = buckling.find_axial_stress(F_axial=load_axial, A=A)
+
+        column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A, L=l_cyl, I=I,
+                                                                                     E=)  # TODO Fill in E
+        shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p, E=, r=r_cyl, t_1=t_cyl, v=,
+                                                                             L=l_cyl)  # TODO Fill in E and v
+
+    if t_cyl>t_sphere:
+        t_sphere=t_cyl
 
 
     # 4. Calculate mass of attachments, calculate mass of fuel tank, calculate total mass
