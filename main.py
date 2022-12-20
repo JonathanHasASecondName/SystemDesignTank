@@ -21,6 +21,18 @@ materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
              ['Carbon Fibre', 1600, 600000000,  ,70000000000]]
 
+#Original Mass values
+
+m_fuel = 888.4
+m_sc = 425.1-31.7 #VALUES FROM WP2 NOT INCLUDING ORIGINAL PREDICTED MASS OF FUEL TANK
+
+
+# Launch G-Forces MUST CHANGE IF SPACECRAFT IS HEAVIER THAN 1814 kg
+g_axial = 8.5
+g_lateral = 3
+
+#DEFAULT M_ATTACH FOR FIRST ITERATION
+m_attach=0
 # TODO: state assumption that thickness is neglected when considering height constraint of tank
 # TODO: state assumption that radius is same for spherical and cyl section
 
@@ -51,20 +63,37 @@ if __name__ in '__main__':
     V_req = {V_req}
     -----------------------''')
 
-    t = evaluate_tank_thickness(p=p, r=r_cyl, sigma_y=sigma_y)
-    m = evaluate_mass(r=r_cyl,t=t[0],l=l_cyl,rho=rho)
+
     # IN -> p, r_cyl,
     # 1. Evaluate tank thickness for internal pressure and evaluate mass
     # OUT -> t_sphere, t_cyl, m_tank
+
+    #CODE FOR STEP 1
+
+    t_sphere = pressure.find_min_thickness_sphere(p=p,r=r_cyl,sigma_y=sigma_y)
+    t_cyl = pressure.find_min_thickness_cylinder(p=p,r=r_cyl,sigma_y=sigma_y)
+
+    m_tank= mass_calculation.cylindrical_shell(r=r_cyl,t=t_cyl,l=l_cyl,rho=rho)\
+            +2*mass_calculation.semi_spherical_shell(r=r_cyl,t=t_sphere,rho=rho)
 
     # IN -> m_attach, m_sc, m_tank, m_fuel
     # 2. Use masses to find loads.
     # OUT -> loads
 
+    #CODE FOR STEP 2
+
+    load_axial = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_axial
+    load_lateral = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_lateral
+
     # IN -> loads + geometry
     # 3. Evaluate failure stress, and check if failure occurs. Update t_cyl until no failure.
     # (With a final t_cyl, check if t_sphere < t_cyl. If so, t_sphere = t_cyl)
     # OUT -> t_sphere and t_cyl
+
+    #CODE FOR STEP 3
+
+
+
 
     # 4. Calculate mass of attachments, calculate mass of fuel tank, calculate total mass
     # OUT -> m_attach, m_tank, m_tot
