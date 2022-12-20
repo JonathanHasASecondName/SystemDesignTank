@@ -66,8 +66,8 @@ def configuration_loop(height_curtain, mass_tank_structure, mass_fuel, radius_cu
                         bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain, mass_tank_structure, mass_fuel) <= material[2]) and (
                         shear_stress_connection(radius_curtain, mass_tank_structure, mass_fuel) <= material[3]) and (
                         stress_shear_crosssection(thickness_curtain,radius_curtain,mass_tank_structure,mass_fuel) <= material[3]):
-                    #print(f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)}")
-                    return (material[0], thickness_curtain, height_curtain * 2 * math.pi * radius_curtain * thickness_curtain)
+                    #print(f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain * material[1])}")
+                    return (material[0], thickness_curtain, height_curtain * 2 * math.pi * radius_curtain * thickness_curtain * material[1])
                     Running = False
 
 #print(' -- Lower curtain configuration --')
