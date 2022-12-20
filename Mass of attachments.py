@@ -1,14 +1,16 @@
 import math
 from buckling import *
 
+mass_tank = 888.4
 flat_distance = 0.04
 height_lower_curtain = 0.66
 height_upper_curtain = 0.34
-
+radius_curtain = 0.56
 materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Al 2024', 2780, 324000000, 283000000, 0.33, 73100000000],
              ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
-             ['Carbon Fibre', 1600, 600000000,  ,70000000000]]
+             ['Carbon Fibre', 1600, 600000000, 90000000, 0.77, 70000000000]]
+
 
 # [material_name,material_density,material_axial_stress,material_shear_stress,material_poisson_ratio,young_modulus]
 
