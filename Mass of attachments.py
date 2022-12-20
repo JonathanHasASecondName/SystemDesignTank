@@ -1,7 +1,8 @@
 import math
 from buckling import *
 
-
+mass_tank_structure = 200
+mass_fuel = 884
 mass_spacecraft = 425.1-31.7
 #425.1-31.7
 flat_distance = 0.04
