@@ -19,13 +19,17 @@ V_req = 0.747
 materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Al 2024', 2780, 324000000, 283000000, 0.33, 73100000000],
              ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
-             ['Carbon Fibre', 1600, 600000000,  ,70000000000]]
+             ['Carbon Fibre', 1600, 600000000, 90000000, 0.77, 70000000000]]
+# [material_name,material_density,material_axial_stress,material_shear_stress,material_poisson_ratio,young_modulus]
+material = materials[0]
+v = material[4]
+E = material[5]
+sigma_y = material[2]
+rho = material[1]
 
 #Original Mass values
-
 m_fuel = 888.4
 m_sc = 425.1-31.7 #VALUES FROM WP2 NOT INCLUDING ORIGINAL PREDICTED MASS OF FUEL TANK
-
 
 # Launch G-Forces MUST CHANGE IF SPACECRAFT IS HEAVIER THAN 1814 kg
 g_axial = 4
@@ -33,13 +37,6 @@ g_lateral = 1.5
 
 #DEFAULT M_ATTACH FOR FIRST ITERATION
 m_attach=0
-# TODO: state assumption that thickness is neglected when considering height constraint of tank
-# TODO: state assumption that radius is same for spherical and cyl section
-
-#TODO: take material parameters from materials_list.py
-E = 200E9
-sigma_y = 350E6
-rho = 7750
 
 def evaluate_mass(r,t,l,rho):
     # Returns (mass cylindrical shell, mass spherical endcaps x2)
@@ -47,8 +44,6 @@ def evaluate_mass(r,t,l,rho):
 def evaluate_tank_thickness(p,r,sigma_y):
     # Returns (thickness cylindrical shell, thickness spherical endcaps x2)
     return (pressure.find_min_thickness_cylinder(p,r,sigma_y), pressure.find_min_thickness_sphere(p,r,sigma_y))
-
-
 
 if __name__ in '__main__':
     print(f'''----TANK PARAMETERS----
@@ -62,7 +57,6 @@ if __name__ in '__main__':
     V_tot = {V_tot}
     V_req = {V_req}
     -----------------------''')
-
 
     # IN -> p, r_cyl,
     # 1. Evaluate tank thickness for internal pressure and evaluate mass
@@ -97,8 +91,8 @@ if __name__ in '__main__':
     I=buckling.find_cylinder_moment_of_inertia(r=r_cyl,t=t_cyl)
     axial_stress = buckling.find_axial_stress(F_axial=load_axial,A=A)
 
-    column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A,L=l_cyl,I=I,E=)#TODO Fill in E
-    shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p,E=,r=r_cyl,t_1=t_cyl,v=,L=l_cyl)#TODO Fill in E and v
+    column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A,L=l_cyl,I=I,E=E)
+    shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p,E=E,r=r_cyl,t_1=t_cyl,v=v,L=l_cyl)
 
     while axial_stress>column_buckling_critical_stress or axial_stress>shell_buckling_critical_stress:
         t_cyl=t_cyl*1.01
