@@ -8,7 +8,7 @@ import Mass_of_attachments
 # Tank parameters
 p = 1620000
 r_cyl = 0.56
-l_cyl = 0.04
+l_cyl = 100 #0.04
 A_cap = 1 # Aspect ratio for the endcap height-radius. 1 is spherical.
 h_cap = r_cyl*A_cap
 h_tot = l_cyl+(2*h_cap)
@@ -78,7 +78,7 @@ if __name__ in '__main__':
     #CODE FOR STEP 2
     m_prev = None
     for count in range(0,100):
-
+       print(f"Running iteration {count}")
        load_axial = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_axial
        load_lateral = (m_attach+m_sc+m_tank+m_fuel)*9.81*g_lateral
 
@@ -122,6 +122,12 @@ if __name__ in '__main__':
 
        m_tot=m_attach+m_tank+m_fuel+m_sc
 
+       print(f'''Total SC Mass = {m_tot}
+Mass Tank = {m_tank}
+Mass Attachment = {m_attach}
+Cylinder Thickness = {t_cyl}
+Spherical Thickness = {t_sphere}
+       ''')
        if m_prev == m_tot:
            break
        else:
@@ -130,9 +136,10 @@ if __name__ in '__main__':
 
     # 5. Repeat 2. - 4. with new m_attach, m_tank, m_tot
 
-print(f'''Total SC Mass = {m_tot}
+print(f'''\n-----------------------
+Total SC Mass = {m_tot}
 Mass Tank = {m_tank}
 Mass Attachment = {m_attach}
 Cylinder Thickness = {t_cyl}
 Spherical Thickness = {t_sphere}
-''')
+-----------------------''')
