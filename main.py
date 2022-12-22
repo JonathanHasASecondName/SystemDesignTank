@@ -8,7 +8,7 @@ import Mass_of_attachments
 # Tank parameters
 p = 1620000
 r_cyl = 0.56
-l_cyl = 100 #0.04
+l_cyl = 0.04
 A_cap = 1 # Aspect ratio for the endcap height-radius. 1 is spherical.
 h_cap = r_cyl*A_cap
 h_tot = l_cyl+(2*h_cap)
@@ -16,6 +16,8 @@ V_cyl = (np.pi*r_cyl**2)*l_cyl
 V_cap = (1/6)*np.pi*h_cap*(3*r_cyl**2 + h_cap**2)
 V_tot = V_cyl + 2*V_cap
 V_req = 0.747
+if V_tot < V_req:
+    raise SyntaxError("BAD VOLUME")
 
 materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Al 2024', 2780, 324000000, 283000000, 0.33, 73100000000],
@@ -33,8 +35,10 @@ m_fuel = 888.4
 m_sc = 425.1-31.7 #VALUES FROM WP2 NOT INCLUDING ORIGINAL PREDICTED MASS OF FUEL TANK
 
 # Launch G-Forces MUST CHANGE IF SPACECRAFT IS HEAVIER THAN 1814 kg
-g_axial = 4
-g_lateral = 1.5
+SF_axial = 2
+SF_lateral = 2
+g_axial = 4*SF_axial
+g_lateral = 1.5*SF_lateral
 
 #DEFAULT M_ATTACH FOR FIRST ITERATION
 m_attach=0
@@ -97,6 +101,8 @@ if __name__ in '__main__':
        column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A,L=h_tot,I=I,E=E)
        shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p,E=E,r=r_cyl,t_1=t_cyl,v=v,L=h_tot)
 
+       print(f"MOS COLUMN: {column_buckling_critical_stress/axial_stress}")
+       print(f"MOS SHELL: {shell_buckling_critical_stress/axial_stress}")
        while axial_stress>column_buckling_critical_stress or axial_stress>shell_buckling_critical_stress:
            t_cyl=t_cyl*1.01
 
@@ -108,7 +114,6 @@ if __name__ in '__main__':
                                                                                         E=E)
            shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p, E=E, r=r_cyl, t_1=t_cyl, v=v,
                                                                                 L=h_tot)
-           print("I am iterating")
            if t_cyl>t_sphere:
                t_sphere=t_cyl
 
@@ -118,15 +123,19 @@ if __name__ in '__main__':
        # 4. Calculate mass of attachments, calculate mass of fuel tank, calculate total mass
        # OUT -> m_attach, m_tot
 
-       m_attach = Mass_of_attachments.configuration_loop(height_curtain=1,mass_tank_structure=m_tank,mass_fuel=m_fuel,radius_curtain=0.56)[2]
+       attach = Mass_of_attachments.configuration_loop(height_curtain=1,mass_tank_structure=m_tank,mass_fuel=m_fuel,radius_curtain=0.56)
+       m_attach = attach[2]
 
        m_tot=m_attach+m_tank+m_fuel+m_sc
 
        print(f'''Total SC Mass = {m_tot}
+Material Tank = {material[0]}
 Mass Tank = {m_tank}
-Mass Attachment = {m_attach}
 Cylinder Thickness = {t_cyl}
 Spherical Thickness = {t_sphere}
+Thickness Skirt = {attach[1]}
+Material Skirt = {attach[0]}
+Mass Skirt = {attach[2]}
        ''')
        if m_prev == m_tot:
            break
@@ -136,10 +145,3 @@ Spherical Thickness = {t_sphere}
 
     # 5. Repeat 2. - 4. with new m_attach, m_tank, m_tot
 
-print(f'''\n-----------------------
-Total SC Mass = {m_tot}
-Mass Tank = {m_tank}
-Mass Attachment = {m_attach}
-Cylinder Thickness = {t_cyl}
-Spherical Thickness = {t_sphere}
------------------------''')

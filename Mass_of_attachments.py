@@ -1,8 +1,6 @@
 import math
 from buckling import *
 
-mass_tank_structure = 200
-mass_fuel = 884
 mass_spacecraft = 425.1-31.7
 #425.1-31.7
 flat_distance = 0.04
@@ -48,7 +46,7 @@ def axial_stresses(thickness_curtain, radius_curtain, mass_tank_structure, mass_
     return axial_stress
 
 
-def shell_buckling(thickness_curtain, radius_curtain, height_curtain, material):
+def shell_buckling(thickness_curtain, radius_curtain, height_curtain, material, mass_tank_structure, mass_fuel):
     Buckles = False
     buckling_stress = find_stress_shell_buckling(0, material[5], radius_curtain, thickness_curtain, material[4], height_curtain)
     if buckling_stress < axial_stresses(thickness_curtain, radius_curtain, mass_tank_structure, mass_fuel):
@@ -57,19 +55,21 @@ def shell_buckling(thickness_curtain, radius_curtain, height_curtain, material):
 
 def configuration_loop(height_curtain, mass_tank_structure, mass_fuel, radius_curtain=0.56):
     Running=True
-    for thickness_curtain in np.arange(0.0001, 0.003, 0.0001):
+    final_thickness = 0
+    for thickness_curtain in np.arange(0.0001, 0.1, 0.0001):
         if Running:
             for material in materials:
                 #print(stress_shear_crosssection(thickness_curtain,radius_curtain,mass_tank_structure,mass_fuel),material[3])
-                if (shell_buckling(thickness_curtain, radius_curtain, height_curtain, material) == False) and (
+                if (shell_buckling(thickness_curtain, radius_curtain, height_curtain, material, mass_tank_structure, mass_fuel) == False) and (
                         axial_stresses(thickness_curtain, radius_curtain, mass_tank_structure, mass_fuel) <= material[2]) and (
                         bending_stress_curtain(radius_curtain, thickness_curtain, height_curtain, mass_tank_structure, mass_fuel) <= material[2]) and (
                         shear_stress_connection(radius_curtain, mass_tank_structure, mass_fuel) <= material[3]) and (
                         stress_shear_crosssection(thickness_curtain,radius_curtain,mass_tank_structure,mass_fuel) <= material[3]):
+                    final_thickness = thickness_curtain
+                    return (material[0], thickness_curtain,
+                            height_curtain * 2 * math.pi * radius_curtain * thickness_curtain * material[1])
                     #print(f"Material: {material[0]} \n Thickness:{thickness_curtain} \n Mass: {(height_curtain * 2 * math.pi * radius_curtain * thickness_curtain * material[1])}")
-                    return (material[0], thickness_curtain, height_curtain * 2 * math.pi * radius_curtain * thickness_curtain * material[1])
                     Running = False
-
 #print(' -- Lower curtain configuration --')
 #configuration_loop(height_lower_curtain, mass_tank_structure, mass_fuel, radius_curtain=0.56)
 #print(' -- Upper curtain configuration --')
