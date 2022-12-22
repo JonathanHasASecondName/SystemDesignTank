@@ -22,7 +22,7 @@ materials = [['Ti6AI4V STA', 4500, 828000000, 760000000, 0.342, 110000000000],
              ['Fe 4130', 7850, 435000000, 427500000, 0.29, 205000000000],
              ['Carbon Fibre', 1600, 600000000, 90000000, 0.77, 70000000000]]
 # [material_name,material_density,material_axial_stress,material_shear_stress,material_poisson_ratio,young_modulus]
-material = materials[3]
+material = materials[0]
 v = material[4]
 E = material[5]
 sigma_y = material[2]
@@ -101,14 +101,14 @@ if __name__ in '__main__':
            t_cyl=t_cyl*1.01
 
            A = buckling.find_sectional_area_cylindrical_shell(r=r_cyl, t=t_cyl)
-           I = buckling.find_cylinder_moment_of_inertia(r=r_cyl, t=t_cyl)
+           I = buckling.find_cylinder_moment_of_inertia(r=r_cyl, t_1=t_cyl)
            axial_stress = buckling.find_axial_stress(F_axial=load_axial, A=A)
 
            column_buckling_critical_stress = buckling.find_stress_euler_column_buckling(A=A, L=h_tot, I=I,
                                                                                         E=E)
            shell_buckling_critical_stress = buckling.find_stress_shell_buckling(p=p, E=E, r=r_cyl, t_1=t_cyl, v=v,
                                                                                 L=h_tot)
-
+           print("I am iterating")
            if t_cyl>t_sphere:
                t_sphere=t_cyl
 
